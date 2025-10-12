@@ -1,0 +1,1 @@
+Contains the exercise from https://quii.gitbook.io/learn-go-with-tests/build-an-application/http-server#what-if-you-dont-do-this
