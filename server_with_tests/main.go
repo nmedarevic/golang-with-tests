@@ -33,14 +33,15 @@ func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodPost:
-		p.SaveScore(w)
+		p.SaveScore(w, r)
 	case http.MethodGet:
 		p.ShowScore(w, r)
 	}
 }
 
-func (p *PlayerServer) SaveScore(w http.ResponseWriter) {
-	p.store.RecordScore("Bob")
+func (p *PlayerServer) SaveScore(w http.ResponseWriter, r *http.Request) {
+	player := strings.TrimPrefix(r.URL.Path, "/players/")
+	p.store.RecordScore(player)
 	w.WriteHeader(http.StatusOK)
 }
 
