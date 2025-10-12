@@ -27,12 +27,20 @@ type PlayerServer struct {
 }
 
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
-		w.WriteHeader(http.StatusOK)
 
-		return
+	switch r.Method {
+	case http.MethodPost:
+		p.saveScore(w)
+	case http.MethodGet:
+		p.showScore(w, r)
 	}
+}
 
+func (p *PlayerServer) saveScore(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusOK)
+}
+
+func (p *PlayerServer) showScore(w http.ResponseWriter, r *http.Request) {
 	player := strings.TrimPrefix(r.URL.Path, "/players/")
 	fmt.Println(player)
 
