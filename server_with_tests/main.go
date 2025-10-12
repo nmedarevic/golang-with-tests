@@ -34,7 +34,6 @@ func (p *PlayerServer) saveScore(w http.ResponseWriter, r *http.Request) {
 
 func (p *PlayerServer) showScore(w http.ResponseWriter, r *http.Request) {
 	player := strings.TrimPrefix(r.URL.Path, "/players/")
-	fmt.Println(player)
 
 	score := p.store.GetPlayerScore(player)
 
