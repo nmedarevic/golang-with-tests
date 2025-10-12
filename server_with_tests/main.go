@@ -27,6 +27,12 @@ type PlayerServer struct {
 }
 
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		w.WriteHeader(http.StatusOK)
+
+		return
+	}
+
 	player := strings.TrimPrefix(r.URL.Path, "/players/")
 	fmt.Println(player)
 
