@@ -18,8 +18,11 @@ func (store *InMemoryStore) GetPlayerScore(name string) int {
 	return 123
 }
 
+func (store *InMemoryStore) RecordScore(name string) {}
+
 type PlayerStore interface {
 	GetPlayerScore(name string) int
+	RecordScore(name string)
 }
 
 type PlayerServer struct {
@@ -30,17 +33,18 @@ func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodPost:
-		p.saveScore(w)
+		p.SaveScore(w)
 	case http.MethodGet:
-		p.showScore(w, r)
+		p.ShowScore(w, r)
 	}
 }
 
-func (p *PlayerServer) saveScore(w http.ResponseWriter) {
+func (p *PlayerServer) SaveScore(w http.ResponseWriter) {
+	p.store.RecordScore("Bob")
 	w.WriteHeader(http.StatusOK)
 }
 
-func (p *PlayerServer) showScore(w http.ResponseWriter, r *http.Request) {
+func (p *PlayerServer) ShowScore(w http.ResponseWriter, r *http.Request) {
 	player := strings.TrimPrefix(r.URL.Path, "/players/")
 	fmt.Println(player)
 

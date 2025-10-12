@@ -8,13 +8,18 @@ import (
 )
 
 type PlayerStubStore struct {
-	scores map[string]int
+	scores   map[string]int
+	winCalls []string
 }
 
 func (s *PlayerStubStore) GetPlayerScore(name string) int {
 	score := s.scores[name]
 
 	return score
+}
+
+func (s *PlayerStubStore) RecordScore(name string) {
+	s.winCalls = append(s.winCalls, name)
 }
 
 func TestGETPlayers(t *testing.T) {
@@ -58,23 +63,38 @@ func TestGETPlayers(t *testing.T) {
 	})
 }
 
-func TestStoreSaves(t *testing.T) {
+func TestSaveScores(t *testing.T) {
 	store := PlayerStubStore{
-		scores: map[string]int{},
+		scores:   map[string]int{},
+		winCalls: nil,
 	}
 	server := &PlayerServer{&store}
 	t.Run("it returns accept on POST", func(t *testing.T) {
-		request, _ := http.NewRequest(http.MethodPost, "/players/Marko", nil)
+		player := "Marko"
+		request := newPostScoreRequest(player)
 		response := httptest.NewRecorder()
 
 		server.ServeHTTP(response, request)
 
 		assertStatus(t, response.Code, http.StatusOK)
+
+		if len(store.winCalls) != 1 {
+			t.Errorf("got %d calls to record scores, want %d", len(store.winCalls), 1)
+		}
+
+		if store.winCalls[0] != player {
+			t.Errorf("Did not store the correct score. Got %q, want %q", store.winCalls[0], player)
+		}
 	})
 }
 
 func newGetScoreRequest(name string) *http.Request {
 	req, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/players/%s", name), nil)
+	return req
+}
+
+func newPostScoreRequest(name string) *http.Request {
+	req, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("/players/%s", name), nil)
 	return req
 }
 
